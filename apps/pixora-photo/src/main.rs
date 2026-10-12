@@ -66,7 +66,9 @@ impl Default for PhotoApp {
 
 impl PhotoApp {
     fn is_activated(&self) -> bool {
-        self.expires_at.as_deref().and_then(|value| DateTime::parse_from_rfc3339(value).ok())
+        self.expires_at
+            .as_deref()
+            .and_then(|value| DateTime::parse_from_rfc3339(value).ok())
             .is_some_and(|expiry| expiry.with_timezone(&Utc) > Utc::now())
     }
 
@@ -105,7 +107,9 @@ impl PhotoApp {
                         self.status = "Activation service returned an incomplete response.".to_owned();
                     }
                 } else {
-                    self.status = body.get("error").and_then(Value::as_str)
+                    self.status = body
+                        .get("error")
+                        .and_then(Value::as_str)
                         .unwrap_or("Activation failed. Please try again.")
                         .to_owned();
                 }
@@ -170,10 +174,15 @@ impl PhotoApp {
         if let Some(original) = self.original.as_ref() {
             let mut image = original.brighten(self.brightness * 2);
             image = image.adjust_contrast(self.contrast);
-            if self.hue != 0 { image = image.huerotate(self.hue); }
-            if self.blur > 0.0 { image = image.blur(self.blur); }
+            if self.hue != 0 {
+                image = image.huerotate(self.hue);
+            }
+            if self.blur > 0.0 {
+                image = image.blur(self.blur);
+            }
             self.image = Some(image);
-            self.dirty = self.brightness != 0 || self.contrast != 0.0 || self.hue != 0 || self.blur > 0.0;
+            self.dirty =
+                self.brightness != 0 || self.contrast != 0.0 || self.hue != 0 || self.blur > 0.0;
             self.refresh_texture(ctx);
         }
     }
@@ -208,14 +217,20 @@ impl eframe::App for PhotoApp {
                     ui.label("Enter your one-time access key to activate this installation.");
                     ui.label("Get a key at https://azuremc-projects.github.io/PIXORA/key-portal/");
                     ui.add_space(16.0);
-                    ui.add_sized([360.0, 32.0], egui::TextEdit::singleline(&mut self.activation_key)
-                        .hint_text("PX-…").char_limit(64));
+                    ui.add_sized(
+                        [360.0, 32.0],
+                        egui::TextEdit::singleline(&mut self.activation_key)
+                            .hint_text("PX-…")
+                            .char_limit(64),
+                    );
                     ui.add_space(8.0);
                     if ui.button("Activate PIXORA").clicked() {
                         self.activate_key();
                     }
                     ui.add_space(8.0);
-                    ui.label("Each key can be activated once and provides 10 days from activation.");
+                    ui.label(
+                        "Each key can be activated once and provides 10 days from activation.",
+                    );
                     ui.label(&self.status);
                 });
             });
@@ -273,7 +288,11 @@ impl eframe::App for PhotoApp {
                 ui.label("Soft blur");
                 let old_blur = self.blur;
                 ui.add(egui::Slider::new(&mut self.blur, 0.0..=10.0).suffix(" px"));
-                if self.brightness != old_brightness || self.contrast != old_contrast || self.hue != old_hue || (self.blur - old_blur).abs() > f32::EPSILON {
+                if self.brightness != old_brightness
+                    || self.contrast != old_contrast
+                    || self.hue != old_hue
+                    || (self.blur - old_blur).abs() > f32::EPSILON
+                {
                     self.rebuild_adjustments(ctx);
                 }
 
@@ -289,9 +308,9 @@ impl eframe::App for PhotoApp {
                             let [r, g, b, a] = pixel.0;
                             let (r, g, b) = (r as f32, g as f32, b as f32);
                             *pixel = image::Rgba([
-                                (0.393*r + 0.769*g + 0.189*b).min(255.0) as u8,
-                                (0.349*r + 0.686*g + 0.168*b).min(255.0) as u8,
-                                (0.272*r + 0.534*g + 0.131*b).min(255.0) as u8,
+                                (0.393 * r + 0.769 * g + 0.189 * b).min(255.0) as u8,
+                                (0.349 * r + 0.686 * g + 0.168 * b).min(255.0) as u8,
+                                (0.272 * r + 0.534 * g + 0.131 * b).min(255.0) as u8,
                                 a,
                             ]);
                         }
@@ -403,7 +422,6 @@ fn image_format_label(path: &str) -> &'static str {
     }
 }
 
-
 fn activation_record_path() -> Option<PathBuf> {
     dirs::data_local_dir().map(|base| base.join("PIXORA").join("activation.json"))
 }
@@ -412,11 +430,16 @@ fn load_activation_record() -> (String, Option<String>) {
     if let Some(path) = activation_record_path() {
         if let Ok(contents) = fs::read_to_string(path) {
             if let Ok(value) = serde_json::from_str::<Value>(&contents) {
-                let id = value.get("installation_id").and_then(Value::as_str)
+                let id = value
+                    .get("installation_id")
+                    .and_then(Value::as_str)
                     .filter(|value| value.len() >= 32)
                     .map(str::to_owned)
                     .unwrap_or_else(|| uuid::Uuid::new_v4().simple().to_string());
-                let expiry = value.get("expires_at").and_then(Value::as_str).map(str::to_owned);
+                let expiry = value
+                    .get("expires_at")
+                    .and_then(Value::as_str)
+                    .map(str::to_owned);
                 return (id, expiry);
             }
         }
@@ -427,9 +450,15 @@ fn load_activation_record() -> (String, Option<String>) {
 }
 
 fn save_activation_record(installation_id: &str, expires_at: Option<&str>) -> bool {
-    let Some(path) = activation_record_path() else { return false };
-    let Some(parent) = path.parent() else { return false };
-    if fs::create_dir_all(parent).is_err() { return false; }
+    let Some(path) = activation_record_path() else {
+        return false;
+    };
+    let Some(parent) = path.parent() else {
+        return false;
+    };
+    if fs::create_dir_all(parent).is_err() {
+        return false;
+    }
     let value = json!({ "installation_id": installation_id, "expires_at": expires_at });
     fs::write(path, value.to_string()).is_ok()
 }
