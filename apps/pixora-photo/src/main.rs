@@ -1,5 +1,6 @@
 //! PIXORA Photo: a first, deliberately small raster editor.
 
+#![cfg_attr(target_os = "windows", windows_subsystem = "windows")]
 #![allow(clippy::all, clippy::pedantic)]
 
 use chrono::{DateTime, Utc};
@@ -31,6 +32,9 @@ struct PhotoApp {
     open_path: String,
     save_path: String,
     brightness: i32,
+    contrast: f32,
+    hue: i32,
+    blur: f32,
     status: String,
     dirty: bool,
     activation_key: String,
@@ -48,6 +52,9 @@ impl Default for PhotoApp {
             open_path: String::new(),
             save_path: String::from("pixora-edited.png"),
             brightness: 0,
+            contrast: 0.0,
+            hue: 0,
+            blur: 0.0,
             status: String::from("Open an image to begin. Your files stay on your device."),
             dirty: false,
             activation_key: String::new(),
@@ -117,6 +124,9 @@ impl PhotoApp {
                 self.original = Some(image.clone());
                 self.image = Some(image);
                 self.brightness = 0;
+                self.contrast = 0.0;
+                self.hue = 0;
+                self.blur = 0.0;
                 self.dirty = false;
                 self.status = format!("Opened {}", path.display());
                 self.refresh_texture(ctx);
@@ -152,6 +162,18 @@ impl PhotoApp {
         if let Some(image) = self.image.take() {
             self.image = Some(operation(image));
             self.dirty = true;
+            self.refresh_texture(ctx);
+        }
+    }
+
+    fn rebuild_adjustments(&mut self, ctx: &egui::Context) {
+        if let Some(original) = self.original.as_ref() {
+            let mut image = original.brighten(self.brightness * 2);
+            image = image.adjust_contrast(self.contrast);
+            if self.hue != 0 { image = image.huerotate(self.hue); }
+            if self.blur > 0.0 { image = image.blur(self.blur); }
+            self.image = Some(image);
+            self.dirty = self.brightness != 0 || self.contrast != 0.0 || self.hue != 0 || self.blur > 0.0;
             self.refresh_texture(ctx);
         }
     }
@@ -240,20 +262,47 @@ impl eframe::App for PhotoApp {
             .show(ctx, |ui| {
                 ui.heading("Adjustments");
                 ui.label("Brightness");
-                let previous = self.brightness;
+                let old_brightness = self.brightness;
                 ui.add(egui::Slider::new(&mut self.brightness, -100..=100).suffix("%"));
-                if self.brightness != previous {
-                    if let Some(original) = self.original.as_ref() {
-                        self.image = Some(original.brighten(self.brightness * 2));
-                        self.dirty = self.brightness != 0;
-                        self.refresh_texture(ctx);
-                    }
+                ui.label("Contrast");
+                let old_contrast = self.contrast;
+                ui.add(egui::Slider::new(&mut self.contrast, -100.0..=100.0).suffix("%"));
+                ui.label("Hue");
+                let old_hue = self.hue;
+                ui.add(egui::Slider::new(&mut self.hue, -180..=180).suffix("°"));
+                ui.label("Soft blur");
+                let old_blur = self.blur;
+                ui.add(egui::Slider::new(&mut self.blur, 0.0..=10.0).suffix(" px"));
+                if self.brightness != old_brightness || self.contrast != old_contrast || self.hue != old_hue || (self.blur - old_blur).abs() > f32::EPSILON {
+                    self.rebuild_adjustments(ctx);
                 }
 
                 ui.separator();
                 ui.label("One-click edits");
                 if ui.button("Grayscale").clicked() {
                     self.apply_filter(ctx, |image| image.grayscale());
+                }
+                if ui.button("Sepia tone").clicked() {
+                    self.apply_filter(ctx, |image| {
+                        let mut rgba = image.to_rgba8();
+                        for pixel in rgba.pixels_mut() {
+                            let [r, g, b, a] = pixel.0;
+                            let (r, g, b) = (r as f32, g as f32, b as f32);
+                            *pixel = image::Rgba([
+                                (0.393*r + 0.769*g + 0.189*b).min(255.0) as u8,
+                                (0.349*r + 0.686*g + 0.168*b).min(255.0) as u8,
+                                (0.272*r + 0.534*g + 0.131*b).min(255.0) as u8,
+                                a,
+                            ]);
+                        }
+                        DynamicImage::ImageRgba8(rgba)
+                    });
+                }
+                if ui.button("Sharpen").clicked() {
+                    self.apply_filter(ctx, |image| image.unsharpen(1.5, 1));
+                }
+                if ui.button("Blur").clicked() {
+                    self.apply_filter(ctx, |image| image.blur(2.5));
                 }
                 if ui.button("Invert colours").clicked() {
                     self.apply_filter(ctx, |mut image| {
@@ -276,6 +325,9 @@ impl eframe::App for PhotoApp {
                 if ui.button("Reset to original").clicked() {
                     self.image = self.original.clone();
                     self.brightness = 0;
+                    self.contrast = 0.0;
+                    self.hue = 0;
+                    self.blur = 0.0;
                     self.dirty = false;
                     self.refresh_texture(ctx);
                 }
