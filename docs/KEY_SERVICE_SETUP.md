@@ -1,6 +1,6 @@
 # PIXORA key service setup
 
-The key portal is a static website; key issuance must run on a trusted server. The repository now includes a Supabase Edge Function implementation and SQL schema, but they are **source files only** until deployed to a dedicated Supabase project.
+The key portal is a static website; key issuance must run on a trusted server. A dedicated Supabase project now exists and the database schema plus `issue-key` and `activate-key` Edge Functions are deployed. The service is not live for key issuance until Turnstile is configured, and the desktop app still needs activation/entitlement integration.
 
 ## Security requirements
 
@@ -13,11 +13,11 @@ The key portal is a static website; key issuance must run on a trusted server. T
 
 ## Deploy outline
 
-1. Create a dedicated Supabase project.
-2. Apply `supabase/migrations/202610120001_access_keys.sql` in that project's SQL editor.
-3. Deploy the functions `issue-key` and `activate-key` with the Supabase CLI.
+1. The dedicated project is already created: `PIXORA Access Service` (project ref `vrwumbswbcwpyhbpsiyx`, region `eu-west-2`).
+2. The migration `202610120001_access_keys.sql` has already been applied.
+3. The `issue-key` and `activate-key` Edge Functions have already been deployed.
 4. Set Edge Function secrets `TURNSTILE_SECRET_KEY` and `PIXORA_ALLOWED_ORIGIN` (the latter should be the exact published portal origin). Supabase provides `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to Edge Functions.
-5. Set the portal's public `apiBaseUrl` to `https://YOUR_PROJECT.supabase.co/functions/v1`, `publishableKey` to the Supabase publishable/anon key, and `turnstileSiteKey` to the Turnstile **site key** in `key-portal/portal-config.js`.
+5. The portal's `apiBaseUrl` and public publishable key are already configured in `key-portal/portal-config.js`. Replace `YOUR_TURNSTILE_SITE_KEY` with the Turnstile **site key** after creating the widget.
 6. Publish the portal and test valid, invalid, expired, and repeated activation attempts before announcing the service.
 
 Example CLI commands (replace project reference and keep secrets out of shell history where possible):
