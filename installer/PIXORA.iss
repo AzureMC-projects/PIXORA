@@ -6,7 +6,7 @@
 #define AppExeName "pixora-photo.exe"
 
 [Setup]
-AppId={{D9C1A71B-0B6E-4DCE-AF8E-PIXORA000001}
+AppId={{D9C1A71B-0B6E-4DCE-AF8E-91A0A0000001}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}
