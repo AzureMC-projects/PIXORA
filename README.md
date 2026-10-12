@@ -70,7 +70,9 @@ Planned development tools include:
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
-- [Access keys and activation](docs/ACCESS_KEYS.md) — proposed one-time keys with 10-day access
+- [Access keys and activation](docs/ACCESS_KEYS.md) — one-time keys with 10-day access
+- [Key portal frontend](key-portal/index.html) — static GitHub Pages site (backend configuration required)
+- [Key portal deployment](docs/KEY_PORTAL_DEPLOYMENT.md) — hosting and secure API contract
 - [Roadmap](docs/ROADMAP.md)
 - [Building from source](docs/BUILDING.md)
 - [Contributing](CONTRIBUTING.md)
