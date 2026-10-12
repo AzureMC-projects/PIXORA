@@ -70,6 +70,7 @@ Planned development tools include:
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
+- [Access keys and activation](docs/ACCESS_KEYS.md) — proposed one-time keys with 10-day access
 - [Roadmap](docs/ROADMAP.md)
 - [Building from source](docs/BUILDING.md)
 - [Contributing](CONTRIBUTING.md)
