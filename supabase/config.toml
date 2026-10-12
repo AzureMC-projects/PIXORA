@@ -1,0 +1,7 @@
+project_id = "pixora-key-service"
+
+[functions.issue-key]
+verify_jwt = false
+
+[functions.activate-key]
+verify_jwt = false
