@@ -1,24 +1,25 @@
 # PIXORA key service setup
 
-The key portal is a static website; key issuance must run on a trusted server. A dedicated Supabase project now exists and the database schema plus `issue-key` and `activate-key` Edge Functions are deployed. The service is not live for key issuance until Turnstile is configured, and the desktop app still needs activation/entitlement integration.
+The key portal is a static website; key issuance runs on a trusted Supabase Edge Function. The dedicated Supabase project, database schema, and `issue-key` / `activate-key` Edge Functions are deployed. The portal no longer uses CAPTCHA or Turnstile. The issuance function applies server-side per-IP and global rate limits.
 
 ## Security requirements
 
-- Create a new Supabase project dedicated to PIXORA. Do not reuse a personal or unrelated project.
-- Create a Cloudflare Turnstile widget for the GitHub Pages domain.
-- Never place the Supabase service-role key or Turnstile secret in the repository, the portal JavaScript, or the desktop application.
-- The issue function verifies Turnstile server-side, stores only a SHA-256 hash of the generated key, and returns the plaintext key once.
+- Keep the dedicated Supabase project for PIXORA; do not reuse a personal or unrelated project.
+- Never place the Supabase service-role key in the repository, portal JavaScript, or desktop application.
+- The issue function generates cryptographically random keys, stores only a SHA-256 hash, and returns the plaintext key once.
+- Issuance limits: at most 3 requests per IP per 10-minute bucket and 100 total requests per hour. Requests beyond either limit receive HTTP 429. IP addresses are hashed before storage in the limiter table.
 - Issued keys must be activated within 24 hours. Activation starts a 10-day access period.
+- Rate limits reduce casual abuse but are not proof of a unique human and are weaker than CAPTCHA against distributed bots. Monitor usage and adjust limits if needed.
 - Treat public, open-source clients as modifiable: server-side entitlement checks are required for any service or features that must actually be gated.
 
 ## Deploy outline
 
-1. The dedicated project is already created: `PIXORA Access Service` (project ref `vrwumbswbcwpyhbpsiyx`, region `eu-west-2`).
-2. The migration `202610120001_access_keys.sql` has already been applied.
-3. The `issue-key` and `activate-key` Edge Functions have already been deployed.
-4. Set Edge Function secrets `TURNSTILE_SECRET_KEY` and `PIXORA_ALLOWED_ORIGIN` (the latter should be the exact published portal origin). Supabase provides `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to Edge Functions.
-5. The portal's `apiBaseUrl` and public publishable key are already configured in `key-portal/portal-config.js`. Replace `YOUR_TURNSTILE_SITE_KEY` with the Turnstile **site key** after creating the widget.
-6. Publish the portal and test valid, invalid, expired, and repeated activation attempts before announcing the service.
+1. Dedicated project: `PIXORA Access Service` (project ref `vrwumbswbcwpyhbpsiyx`, region `eu-west-2`).
+2. Migration `202610120001_access_keys.sql` has already been applied; the issuance-limiter migration has also been applied.
+3. The `issue-key` and `activate-key` Edge Functions have been deployed. `issue-key` no longer requires Turnstile.
+4. Supabase provides `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to Edge Functions. Set `PIXORA_ALLOWED_ORIGIN` to the exact published portal origin if needed.
+5. The portal's `apiBaseUrl` and public publishable key are configured in `key-portal/portal-config.js`; no CAPTCHA site key or secret is required.
+6. Publish the portal and test key issuance, rate limiting, valid/invalid activation, expired keys, and repeated activation attempts before announcing the service.
 
 Example CLI commands (replace project reference and keep secrets out of shell history where possible):
 
@@ -27,10 +28,9 @@ supabase link --project-ref YOUR_PROJECT_REF
 supabase db push
 supabase functions deploy issue-key
 supabase functions deploy activate-key
-supabase secrets set TURNSTILE_SECRET_KEY=YOUR_SECRET
 supabase secrets set PIXORA_ALLOWED_ORIGIN=https://azuremc-projects.github.io
 ```
 
 ## Important implementation caveat
 
-The activation function currently checks then conditionally updates the key, but a strict production-grade implementation should move activation into a single PostgreSQL transaction/RPC to eliminate races and add rate limits/monitoring. Add an authenticated entitlement-check endpoint and integrate it into PIXORA before treating access restrictions as enforceable. These functions are a starting implementation, not a claim that a production key service is live.
+The activation function currently checks then conditionally updates the key, but a strict production-grade implementation should move activation into a single PostgreSQL transaction/RPC to eliminate races. Add an authenticated entitlement-check endpoint and integrate it into PIXORA before treating access restrictions as enforceable. The desktop app currently caches expiry locally, so this is not yet production-grade access enforcement.
