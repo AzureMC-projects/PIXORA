@@ -73,8 +73,8 @@
       let captchaToken = '';
       let issuedKey = '';
 
-      const configured = Boolean(config.apiBaseUrl && config.turnstileSiteKey &&
-        !config.apiBaseUrl.includes('YOUR_') && !config.turnstileSiteKey.includes('YOUR_'));
+      const configured = Boolean(config.apiBaseUrl && config.turnstileSiteKey && config.publishableKey &&
+        !config.apiBaseUrl.includes('YOUR_') && !config.turnstileSiteKey.includes('YOUR_') && !config.publishableKey.includes('YOUR_'));
 
       function setStatus(message, kind = '') {
         status.textContent = message;
@@ -115,7 +115,7 @@
         try {
           const response = await fetch(config.apiBaseUrl.replace(/\/$/, '') + '/issue-key', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'apikey': config.publishableKey },
             body: JSON.stringify({ turnstileToken: captchaToken })
           });
           const data = await response.json().catch(() => ({}));
