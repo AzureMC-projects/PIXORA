@@ -3,7 +3,7 @@
 #![allow(clippy::all, clippy::pedantic)]
 
 use eframe::egui;
-use image::{DynamicImage, ImageFormat};
+use image::DynamicImage;
 use std::path::{Path, PathBuf};
 
 fn main() -> eframe::Result<()> {
