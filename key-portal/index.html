@@ -116,7 +116,7 @@
           const response = await fetch(config.apiBaseUrl.replace(/\/$/, '') + '/issue-key', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ captchaToken })
+            body: JSON.stringify({ turnstileToken: captchaToken })
           });
           const data = await response.json().catch(() => ({}));
           if (!response.ok || typeof data.key !== 'string' || !data.key) {
