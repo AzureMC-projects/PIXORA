@@ -3,7 +3,7 @@
 //! This crate is intentionally small at the start. Editing engines should be
 //! introduced as their requirements become concrete.
 //!
-//! Copyright 2026 JacobProjects. Licensed under Apache-2.0.
+//! Copyright 2026 `JacobProjects`. Licensed under Apache-2.0.
 
 #![forbid(unsafe_code)]
 
@@ -35,7 +35,7 @@ mod tests {
 
     #[test]
     fn version_is_not_empty() {
-        assert!(!VERSION.is_empty());
+        assert_ne!(VERSION, "");
     }
 
     #[test]
