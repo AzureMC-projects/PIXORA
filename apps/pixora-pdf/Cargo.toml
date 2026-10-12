@@ -1,0 +1,20 @@
+[package]
+name = "pixora-pdf"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "PIXORA PDF: a lightweight desktop PDF viewer"
+
+[[bin]]
+name = "pixora-pdf"
+path = "src/main.rs"
+
+[dependencies]
+eframe = "0.31.1"
+rfd = "0.15"
+pdfium-render = "0.8"
+
+[lints]
+workspace = true
