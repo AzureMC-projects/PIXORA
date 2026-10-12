@@ -1,0 +1,91 @@
+# PIXORA
+
+**A free, open-source creative suite built with Rust.**
+
+PIXORA aims to bring image editing, vector design, video editing, motion graphics, page layout, media management, and PDF tools into one cohesive creative environment for desktop and the web.
+
+> **Project status:** Early foundation. PIXORA is under active initial development; planned capabilities are not yet claims of implemented functionality.
+
+## Project identity
+
+- **Project:** PIXORA
+- **Creator credit:** JacobProjects
+- **Primary language:** Rust
+- **Targets:** Desktop and browser, with platform-specific integration where needed
+- **License:** Apache License 2.0
+
+## Goals
+
+- Build a modular, reusable Rust core.
+- Share formats and business logic across supported platforms where practical.
+- Keep user projects and media handling predictable and robust.
+- Prioritize accessibility, performance, clear UX, and data portability.
+- Maintain transparent development with tests, documentation, and automated checks.
+
+## Planned creative modules
+
+These are roadmap areas, not promises that each editor is already available.
+
+| Module | Purpose |
+| --- | --- |
+| PIXORA Photo | Raster image editing |
+| PIXORA Vector | Vector illustration and design |
+| PIXORA Motion | Motion graphics and animation |
+| PIXORA Video | Video editing and export |
+| PIXORA Layout | Page and publication layout |
+| PIXORA Media | Asset and photo management |
+| PIXORA PDF | PDF viewing and document tools |
+
+## Repository layout
+
+The project will use a Cargo workspace. Shared engine crates will be kept separate from user-facing applications so they can be tested and reused independently.
+
+- `crates/` — reusable Rust libraries and engines
+- `apps/` — desktop and web application shells
+- `docs/` — architecture, development, and product documentation
+- `tests/` — integration and end-to-end test assets
+- `.github/` — CI and contribution templates
+
+The layout will grow as modules are implemented; avoid adding placeholder subsystems without a concrete purpose.
+
+## Getting started
+
+The repository foundation is being established. Build prerequisites and exact commands will be documented as the first runnable workspace lands.
+
+Planned development tools include:
+
+- A stable Rust toolchain managed with `rust-toolchain.toml`
+- Cargo for builds, tests, and dependency management
+- `rustfmt` for formatting
+- Clippy for linting
+
+## Development principles
+
+1. **Working software over feature checklists.** Features must be implemented and tested before being described as available.
+2. **Small, reviewable changes.** Prefer focused commits and clear pull requests.
+3. **Document decisions.** Record significant architectural choices and trade-offs.
+4. **Respect licenses.** Track third-party dependencies, fonts, icons, codecs, and other assets with their own notices.
+5. **Protect user work.** Treat project files and media as valuable user data; design for safe saves and clear failure handling.
+
+## Documentation
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Roadmap](docs/ROADMAP.md)
+- [Building from source](docs/BUILDING.md)
+- [Contributing](CONTRIBUTING.md)
+- [Security policy](SECURITY.md)
+- [Changelog](CHANGELOG.md)
+
+## Contributing
+
+Contributions, bug reports, and thoughtful feature proposals are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Please avoid posting private data or security-sensitive details in public issues.
+
+## Credits
+
+PIXORA is a project credited to **JacobProjects**.
+
+Third-party projects and assets remain the property of their respective authors and are governed by their own licenses. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) as dependencies are added.
+
+## License
+
+PIXORA is distributed under the terms of the Apache License, Version 2.0. See [LICENSE](LICENSE).
