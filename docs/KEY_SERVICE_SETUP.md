@@ -17,7 +17,7 @@ The key portal is a static website; key issuance must run on a trusted server. T
 2. Apply `supabase/migrations/202610120001_access_keys.sql` in that project's SQL editor.
 3. Deploy the functions `issue-key` and `activate-key` with the Supabase CLI.
 4. Set Edge Function secrets `TURNSTILE_SECRET_KEY` and `PIXORA_ALLOWED_ORIGIN` (the latter should be the exact published portal origin). Supabase provides `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to Edge Functions.
-5. Set the portal's public `apiBaseUrl` to `https://YOUR_PROJECT.supabase.co/functions/v1` and `turnstileSiteKey` to the Turnstile **site key** in `key-portal/portal-config.js`.
+5. Set the portal's public `apiBaseUrl` to `https://YOUR_PROJECT.supabase.co/functions/v1`, `publishableKey` to the Supabase publishable/anon key, and `turnstileSiteKey` to the Turnstile **site key** in `key-portal/portal-config.js`.
 6. Publish the portal and test valid, invalid, expired, and repeated activation attempts before announcing the service.
 
 Example CLI commands (replace project reference and keep secrets out of shell history where possible):
