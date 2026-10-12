@@ -24,7 +24,7 @@ PIXORA aims to bring image editing, vector design, video editing, motion graphic
 
 ## Planned pricing and free versions
 
-PIXORA is intended to offer **free versions alongside a future paid offering**. The current pricing target for the paid version is around **£20**, but this is an early plan, not a final price or release announcement. The exact feature split, whether the paid version is a one-time purchase or another model, and the launch timing have not been decided yet.
+PIXORA is intended to offer **free versions alongside a future paid offering**. The current pricing target for the paid version is around **£20**, but this is an early plan, not a final price or release announcement. The exact feature split, whether the paid version is a one-time purchase or another model, and the launch timing have not been decided yet. **PIXORA Vector and PIXORA Layout may require a purchase in the future**; this is a possibility, not a final decision, and their availability in free versions has not been confirmed.
 
 The project is still in early development, and no paid release is available at this stage. Details will be updated here as the plan becomes clearer.
 
