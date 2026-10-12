@@ -6,10 +6,10 @@ This roadmap is directional. Milestones are complete only when code, tests, and 
 
 - [x] Public repository established
 - [x] Project overview and creator credit
-- [ ] Complete Apache-2.0 license text
-- [ ] Cargo workspace and core crate
+- [x] Complete Apache-2.0 license text
+- [x] Cargo workspace and core crate
 - [ ] CI for formatting, linting, and tests
-- [ ] Contribution and security policies
+- [x] Contribution and security policies
 
 ## Phase 1 — Runnable core
 
