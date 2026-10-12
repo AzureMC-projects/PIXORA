@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/pixora-core"]
+members = ["crates/pixora-core", "apps/pixora-photo"]
 
 [workspace.package]
 version = "0.1.0"
