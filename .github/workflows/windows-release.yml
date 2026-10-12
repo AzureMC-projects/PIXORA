@@ -26,8 +26,20 @@ jobs:
       - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
 
-      - name: Build PIXORA Photo
-        run: cargo build --release -p pixora-photo
+      - name: Build PIXORA Photo and PDF
+        run: |
+          cargo build --release -p pixora-photo -p pixora-pdf
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        shell: pwsh
+
+      - name: Download PDFium runtime
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/bblanchon/pdfium-binaries/releases/latest/download/pdfium-win-x64.tgz" -OutFile pdfium.tgz
+          tar -xzf pdfium.tgz
+          $dll = Get-ChildItem -Path . -Filter pdfium.dll -Recurse | Select-Object -First 1
+          if (-not $dll) { throw "pdfium.dll was not found in the downloaded archive." }
+          New-Item -ItemType Directory -Force -Path "target\release" | Out-Null
+          Copy-Item $dll.FullName "target\release\pdfium.dll" -Force
         shell: pwsh
 
       - name: Install Inno Setup
