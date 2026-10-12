@@ -1,10 +1,9 @@
 // Public configuration for the static GitHub Pages portal.
 // Only public values belong here. Never place backend secrets in this file.
 window.PIXORA_PORTAL_CONFIG = {
-  // Example: "https://your-project.supabase.co/functions/v1"
-  apiBaseUrl: "YOUR_BACKEND_FUNCTIONS_BASE_URL",
-  // Supabase publishable/anon key. This is public and must never be a service-role key.
-  publishableKey: "YOUR_SUPABASE_PUBLISHABLE_KEY",
-  // Cloudflare Turnstile PUBLIC site key (not the secret key).
+  apiBaseUrl: "https://vrwumbswbcwpyhbpsiyx.supabase.co/functions/v1",
+  // Public Supabase publishable key; safe for browser use.
+  publishableKey: "sb_publishable_ea72oQoOcoyhx-LvAIh2Gw_SYp3UCZi",
+  // Add the Cloudflare Turnstile PUBLIC site key after creating the widget.
   turnstileSiteKey: "YOUR_TURNSTILE_SITE_KEY"
 };
