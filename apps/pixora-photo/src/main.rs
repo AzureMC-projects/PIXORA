@@ -163,7 +163,7 @@ impl eframe::App for PhotoApp {
                 ui.separator();
                 ui.label("One-click edits");
                 if ui.button("Grayscale").clicked() {
-                    self.apply_filter(ctx, DynamicImage::grayscale);
+                    self.apply_filter(ctx, |image| image.grayscale());
                 }
                 if ui.button("Invert colours").clicked() {
                     self.apply_filter(ctx, |mut image| {
@@ -245,7 +245,7 @@ fn default_output_path(input: &Path) -> PathBuf {
 
 fn image_format_label(path: &str) -> &'static str {
     match Path::new(path).extension().and_then(|ext| ext.to_str()).map(str::to_ascii_lowercase).as_deref() {
-        Some("jpg" | "jpeg") => ImageFormat::Jpeg.extensions_str()[0].into(),
+        Some("jpg" | "jpeg") => "JPEG",
         Some("webp") => "WebP",
         Some("bmp") => "BMP",
         Some("gif") => "GIF",
