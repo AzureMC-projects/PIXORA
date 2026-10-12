@@ -9,7 +9,7 @@ on:
       - "v*"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   windows-installer:
@@ -48,3 +48,11 @@ jobs:
           path: dist/PIXORA-Setup.exe
           if-no-files-found: error
           retention-days: 30
+
+      - name: Attach installer to v0.1.0 release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.1.0
+          files: dist/PIXORA-Setup.exe
+          fail_on_unmatched_files: true
+          overwrite_files: true
