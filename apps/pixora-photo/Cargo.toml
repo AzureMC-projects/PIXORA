@@ -1,0 +1,21 @@
+[package]
+name = "pixora-photo"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "PIXORA Photo: an early desktop raster-image editor"
+
+[[bin]]
+name = "pixora-photo"
+path = "src/main.rs"
+
+[dependencies]
+eframe = "0.36.2"
+image = { version = "0.25", default-features = false, features = ["bmp", "gif", "jpeg", "png", "tiff", "webp"] }
+rfd = "0.15"
+pixora-core = { path = "../../crates/pixora-core" }
+
+[lints]
+workspace = true
