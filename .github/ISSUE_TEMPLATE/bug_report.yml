@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a reproducible problem in PIXORA.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Check for duplicates first. Do not include passwords, tokens, private documents, or personal data."
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe observed and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. ...\n2. ...\n3. ..."
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: PIXORA version or commit
+    validations:
+      required: false
+  - type: input
+    id: platform
+    attributes:
+      label: OS / browser / environment
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Redact sensitive paths and information.
+    validations:
+      required: false
