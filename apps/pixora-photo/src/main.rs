@@ -6,7 +6,7 @@
 use chrono::{DateTime, Utc};
 use eframe::egui;
 use image::DynamicImage;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -93,10 +93,13 @@ impl PhotoApp {
             Ok(response) => {
                 let status = response.status();
                 let body = response.json::<Value>().unwrap_or_else(|_| json!({}));
-                if status.is_success() && body.get("activated").and_then(Value::as_bool) == Some(true) {
+                if status.is_success()
+                    && body.get("activated").and_then(Value::as_bool) == Some(true)
+                {
                     if let Some(expiry) = body.get("expiresAt").and_then(Value::as_str) {
                         self.expires_at = Some(expiry.to_owned());
-                        if save_activation_record(&self.installation_id, self.expires_at.as_deref()) {
+                        if save_activation_record(&self.installation_id, self.expires_at.as_deref())
+                        {
                             self.activation_key.clear();
                             self.status = format!("PIXORA activated until {expiry}.");
                         } else {
@@ -104,7 +107,8 @@ impl PhotoApp {
                             self.status = "Activation succeeded, but this device could not save the activation record. Check your local app-data permissions and retry.".to_owned();
                         }
                     } else {
-                        self.status = "Activation service returned an incomplete response.".to_owned();
+                        self.status =
+                            "Activation service returned an incomplete response.".to_owned();
                     }
                 } else {
                     self.status = body
