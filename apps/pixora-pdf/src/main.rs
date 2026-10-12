@@ -66,7 +66,7 @@ impl PdfApp {
             .map_err(|e| format!("Invalid or password-protected PDF: {e}"))?;
         let count = document.pages().len();
         if count == 0 { return Err("This PDF has no pages.".into()); }
-        let page_index = (index as usize).min(count - 1);
+        let page_index = index.min(count - 1);
         let page = document.pages().get(page_index)
             .map_err(|e| format!("Could not read page: {e}"))?;
         let width = ((page.width().value as f32 * zoom).round() as i32).clamp(300, 2200) as u16;
