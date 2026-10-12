@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#11111a">
+  <meta name="description" content="Request a PIXORA one-time access key.">
+  <title>PIXORA Key Portal</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./portal-config.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="PIXORA Key Portal home"><span class="brand-mark">P</span><span>PIXORA</span></a>
+      <span class="top-label">OFFICIAL ACCESS PORTAL</span>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow"><span class="pulse"></span> CREATIVE ACCESS, SIMPLIFIED</div>
+      <h1>Your creativity<br><span>starts here.</span></h1>
+      <p class="intro">Generate a one-time PIXORA access key. No email address or account required.</p>
+
+      <div class="key-card">
+        <div class="card-heading">
+          <div>
+            <span class="section-label">YOUR ACCESS KEY</span>
+            <h2 id="card-title">Ready when you are</h2>
+          </div>
+          <span class="lock-icon" aria-hidden="true">⌁</span>
+        </div>
+        <div id="key-output" class="key-output" aria-live="polite">
+          <span class="placeholder-key">Your key will appear here</span>
+        </div>
+        <button id="copy-button" class="button button-secondary" type="button" disabled>Copy key</button>
+        <p id="key-note" class="fine-print">Keys are shown once. Save yours before leaving this page.</p>
+      </div>
+
+      <div class="challenge-wrap">
+        <p class="challenge-title">Before you generate a key</p>
+        <p class="challenge-copy">Complete the verification challenge to help keep automated requests under control.</p>
+        <div id="captcha-container" class="captcha-container">
+          <p id="setup-notice" class="setup-notice">The portal is not live yet. The site owner must configure the secure key service and bot verification before keys can be issued.</p>
+          <div id="turnstile-slot"></div>
+        </div>
+        <button id="generate-button" class="button button-primary" type="button" disabled>
+          <span>Generate my key</span><span aria-hidden="true">↗</span>
+        </button>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="benefits" aria-label="Key details">
+      <article><span class="benefit-icon">01</span><div><h3>One-time use</h3><p>Each key can activate only one installation.</p></div></article>
+      <article><span class="benefit-icon">10</span><div><h3>Ten days of access</h3><p>Your access period starts at successful activation.</p></div></article>
+      <article><span class="benefit-icon">↻</span><div><h3>Renew when needed</h3><p>Return here to request a new key after expiry.</p></div></article>
+    </section>
+
+    <footer><span>PIXORA · by JacobProjects</span><span>Keys are issued by the secure PIXORA service.</span></footer>
+  </main>
+
+  <script>
+    (() => {
+      const config = window.PIXORA_PORTAL_CONFIG || {};
+      const generateButton = document.getElementById('generate-button');
+      const copyButton = document.getElementById('copy-button');
+      const keyOutput = document.getElementById('key-output');
+      const cardTitle = document.getElementById('card-title');
+      const keyNote = document.getElementById('key-note');
+      const status = document.getElementById('status');
+      const setupNotice = document.getElementById('setup-notice');
+      let captchaToken = '';
+      let issuedKey = '';
+
+      const configured = Boolean(config.apiBaseUrl && config.turnstileSiteKey &&
+        !config.apiBaseUrl.includes('YOUR_') && !config.turnstileSiteKey.includes('YOUR_'));
+
+      function setStatus(message, kind = '') {
+        status.textContent = message;
+        status.className = 'status' + (kind ? ' ' + kind : '');
+      }
+
+      if (configured) {
+        setupNotice.hidden = true;
+        const script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=pixoraTurnstileReady&render=explicit';
+        script.async = true;
+        script.defer = true;
+        window.pixoraTurnstileReady = () => {
+          window.turnstile.render('#turnstile-slot', {
+            sitekey: config.turnstileSiteKey,
+            callback: token => {
+              captchaToken = token;
+              generateButton.disabled = false;
+            },
+            'expired-callback': () => {
+              captchaToken = '';
+              generateButton.disabled = true;
+            },
+            'error-callback': () => {
+              captchaToken = '';
+              generateButton.disabled = true;
+              setStatus('Verification could not load. Please try again.', 'error');
+            }
+          });
+        };
+        document.head.appendChild(script);
+      }
+
+      generateButton.addEventListener('click', async () => {
+        if (!configured || !captchaToken || generateButton.disabled) return;
+        generateButton.disabled = true;
+        setStatus('Requesting a key securely…');
+        try {
+          const response = await fetch(config.apiBaseUrl.replace(/\/$/, '') + '/issue-key', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ captchaToken })
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok || typeof data.key !== 'string' || !data.key) {
+            throw new Error(data.error || 'A key could not be issued. Please wait and try again.');
+          }
+          issuedKey = data.key;
+          keyOutput.textContent = issuedKey;
+          keyOutput.classList.add('has-key');
+          cardTitle.textContent = 'Your key is ready';
+          keyNote.textContent = 'Copy this key now. For security, it will not be shown again after you leave or refresh this page.';
+          copyButton.disabled = false;
+          setStatus('Key generated. Activate it in PIXORA to start your 10-day period.', 'success');
+          if (window.turnstile) window.turnstile.reset();
+          captchaToken = '';
+        } catch (error) {
+          setStatus(error.message || 'Something went wrong. Please try again later.', 'error');
+          if (window.turnstile) window.turnstile.reset();
+          captchaToken = '';
+        } finally {
+          generateButton.disabled = true;
+        }
+      });
+
+      copyButton.addEventListener('click', async () => {
+        if (!issuedKey) return;
+        try {
+          await navigator.clipboard.writeText(issuedKey);
+          copyButton.textContent = 'Copied!';
+        } catch {
+          setStatus('Copy was blocked by your browser. Select the key and copy it manually.', 'error');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
