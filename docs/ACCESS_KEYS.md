@@ -1,6 +1,6 @@
 # Access Keys and Activation
 
-**Status:** Design defined; the key website, activation API, and app integration are not implemented yet.
+**Status (2026-10-12):** A dedicated Supabase project, database schema, and the `issue-key` / `activate-key` Edge Functions have been deployed. The portal is connected to the project but still needs Cloudflare Turnstile configuration and GitHub Pages publishing. Desktop activation and ongoing entitlement checks are not yet integrated, so do not describe access gating as production-ready.
 
 ## Policy
 
