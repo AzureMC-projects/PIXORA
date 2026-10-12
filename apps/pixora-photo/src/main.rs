@@ -83,7 +83,11 @@ impl PhotoApp {
         }
     }
 
-    fn apply_filter(&mut self, ctx: &egui::Context, operation: impl FnOnce(DynamicImage) -> DynamicImage) {
+    fn apply_filter(
+        &mut self,
+        ctx: &egui::Context,
+        operation: impl FnOnce(DynamicImage) -> DynamicImage,
+    ) {
         if let Some(image) = self.image.take() {
             self.image = Some(operation(image));
             self.dirty = true;
@@ -119,7 +123,10 @@ impl eframe::App for PhotoApp {
                 ui.separator();
                 if ui.button("Open image…").clicked() {
                     if let Some(path) = rfd::FileDialog::new()
-                        .add_filter("Image files", &["png", "jpg", "jpeg", "webp", "bmp", "gif", "tif", "tiff"])
+                        .add_filter(
+                            "Image files",
+                            &["png", "jpg", "jpeg", "webp", "bmp", "gif", "tif", "tiff"],
+                        )
                         .pick_file()
                     {
                         self.load_path(&path, ctx);
@@ -221,7 +228,9 @@ impl eframe::App for PhotoApp {
                 ui.centered_and_justified(|ui| {
                     ui.vertical_centered(|ui| {
                         ui.heading("Your canvas is empty");
-                        ui.label("Open a PNG, JPEG, WebP, BMP, GIF or TIFF image to start editing.");
+                        ui.label(
+                            "Open a PNG, JPEG, WebP, BMP, GIF or TIFF image to start editing.",
+                        );
                     });
                 });
             }
@@ -244,7 +253,12 @@ fn default_output_path(input: &Path) -> PathBuf {
 }
 
 fn image_format_label(path: &str) -> &'static str {
-    match Path::new(path).extension().and_then(|ext| ext.to_str()).map(str::to_ascii_lowercase).as_deref() {
+    match Path::new(path)
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .map(str::to_ascii_lowercase)
+        .as_deref()
+    {
         Some("jpg" | "jpeg") => "JPEG",
         Some("webp") => "WebP",
         Some("bmp") => "BMP",
