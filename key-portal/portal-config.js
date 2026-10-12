@@ -3,6 +3,8 @@
 window.PIXORA_PORTAL_CONFIG = {
   // Example: "https://your-project.supabase.co/functions/v1"
   apiBaseUrl: "YOUR_BACKEND_FUNCTIONS_BASE_URL",
+  // Supabase publishable/anon key. This is public and must never be a service-role key.
+  publishableKey: "YOUR_SUPABASE_PUBLISHABLE_KEY",
   // Cloudflare Turnstile PUBLIC site key (not the secret key).
   turnstileSiteKey: "YOUR_TURNSTILE_SITE_KEY"
 };
