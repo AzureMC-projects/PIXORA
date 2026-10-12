@@ -71,7 +71,7 @@ impl PdfApp {
             .map_err(|e| format!("Could not read page: {e}"))?;
         let width = ((page.width().value as f32 * zoom).round() as i32).clamp(300, 2200) as u16;
         let bitmap = page.render_with_config(
-            &PdfRenderConfig::new().set_target_width(width)
+            &PdfRenderConfig::new().set_target_width(width as i32)
         ).map_err(|e| format!("Could not render page: {e}"))?;
         let image = bitmap.as_image().to_rgba8();
         let size = [image.width() as usize, image.height() as usize];
