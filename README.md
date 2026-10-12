@@ -56,7 +56,7 @@ The layout will grow as modules are implemented; avoid adding placeholder subsys
 
 ## Getting started
 
-The repository foundation is being established. Build prerequisites and exact commands will be documented as the first runnable workspace lands.
+The first runnable desktop application, **PIXORA Photo**, is now in the workspace as an early raster editor. It can open common image formats, adjust brightness, apply grayscale/invert, rotate/flip, reset, and export images. See [PIXORA Photo documentation](docs/PHOTO_EDITOR.md).
 
 Planned development tools include:
 
@@ -75,7 +75,7 @@ Planned development tools include:
 
 ## Documentation
 
-- [Architecture](docs/ARCHITECTURE.md)
+- [PIXORA Photo editor](docs/PHOTO_EDITOR.md) — first runnable raster-editor milestone\n- [Windows installer build](installer/PIXORA.iss) — Inno Setup installer definition\n- [Key service setup](docs/KEY_SERVICE_SETUP.md) — backend deployment steps; keys are not live until configured\n- [Architecture](docs/ARCHITECTURE.md)
 - [Access keys and activation](docs/ACCESS_KEYS.md) — one-time keys with 10-day access
 - [Key portal frontend](key-portal/index.html) — static GitHub Pages site (backend configuration required)
 - [Key portal deployment](docs/KEY_PORTAL_DEPLOYMENT.md) — hosting and secure API contract
